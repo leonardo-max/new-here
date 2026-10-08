@@ -53,6 +53,34 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Focus mode
+    |--------------------------------------------------------------------------
+    |
+    | While a hint is open, the rest of the page is blurred and cannot be
+    | clicked or focused, until the user goes through the hints ("Next",
+    | "Got it", "Dismiss all") or presses Escape. Set to false for plain
+    | tooltips that never block the page.
+    |
+    */
+
+    'backdrop' => true,
+
+    /*
+    |--------------------------------------------------------------------------
+    | Language
+    |--------------------------------------------------------------------------
+    |
+    | The buttons of the hint ("Next", "Got it"...) follow the application
+    | locale. Set a locale here to force one. Shipped: en, es, pt_BR — and
+    | close variants (pt, pt-BR, es_AR, en_US...) resolve to them. Publish
+    | the translations to add another language.
+    |
+    */
+
+    'locale' => null,
+
+    /*
+    |--------------------------------------------------------------------------
     | Do not show the past to newcomers
     |--------------------------------------------------------------------------
     |

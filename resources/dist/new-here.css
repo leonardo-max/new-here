@@ -7,6 +7,39 @@
     pointer-events: none;
 }
 
+/* Focus mode: the rest of the page is blurred, dimmed and inert. */
+
+.nh-backdrop {
+    position: fixed;
+    pointer-events: auto;
+    background: rgb(9 9 11 / 0.28);
+    backdrop-filter: blur(3px) saturate(0.9);
+    -webkit-backdrop-filter: blur(3px) saturate(0.9);
+}
+
+.nh-backdrop.nh-enter {
+    animation: nh-fade 180ms ease-out;
+}
+
+.dark .nh-backdrop {
+    background: rgb(0 0 0 / 0.45);
+}
+
+.nh-spotlight {
+    position: fixed;
+    pointer-events: auto;
+    border-radius: 0.625rem;
+    box-shadow:
+        0 0 0 2px var(--primary-500, #f59e0b),
+        0 0 0 6px color-mix(in oklab, var(--primary-500, #f59e0b) 25%, transparent);
+}
+
+@keyframes nh-fade {
+    from {
+        opacity: 0;
+    }
+}
+
 .nh-beacon {
     position: fixed;
     width: 16px;
@@ -209,7 +242,9 @@
         opacity: 0;
     }
 
-    .nh-popover {
+    .nh-popover,
+    .nh-backdrop {
         animation: none;
     }
+
 }

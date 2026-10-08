@@ -25,6 +25,10 @@ class NewHerePlugin implements Plugin
 
     protected ?bool $opensFirstHintAutomatically = null;
 
+    protected ?bool $hasBackdrop = null;
+
+    protected string | Closure | null $locale = null;
+
     public static function make(): static
     {
         return app(static::class);
@@ -130,5 +134,39 @@ class NewHerePlugin implements Plugin
     public function opensFirstHintAutomatically(): bool
     {
         return $this->opensFirstHintAutomatically ?? (bool) config('new-here.open_first_hint_automatically', true);
+    }
+
+    /**
+     * Focus mode: blur the rest of the page and block it while a hint is
+     * open. On by default.
+     */
+    public function backdrop(bool $condition = true): static
+    {
+        $this->hasBackdrop = $condition;
+
+        return $this;
+    }
+
+    public function hasBackdrop(): bool
+    {
+        return $this->hasBackdrop ?? (bool) config('new-here.backdrop', true);
+    }
+
+    /**
+     * Force the language of the hint buttons. Accepts a closure, e.g. to
+     * follow a per-user preference: `->locale(fn() => auth()->user()->locale)`.
+     */
+    public function locale(string | Closure | null $locale): static
+    {
+        $this->locale = $locale;
+
+        return $this;
+    }
+
+    public function getLocale(): ?string
+    {
+        $locale = $this->evaluate($this->locale) ?? config('new-here.locale');
+
+        return filled($locale) ? (string) $locale : null;
     }
 }

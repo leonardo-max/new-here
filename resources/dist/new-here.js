@@ -24,6 +24,7 @@ export default function newHere(config) {
         scanDeadline: null,
         frame: null,
         listeners: [],
+        inertElements: [],
 
         init() {
             this.layer = document.createElement('div')
@@ -50,8 +51,12 @@ export default function newHere(config) {
             this.listen(window, 'resize', () => this.schedulePosition(), { passive: true })
             this.listen(document, 'keydown', (event) => {
                 // Escape inside a Filament modal closes the modal, not the hint.
-                if (event.key === 'Escape' && this.openKey && ! this.openModal()) {
+                if (event.key === 'Escape' && this.openKey && (this.isFocusMode() || ! this.openModal())) {
                     this.close()
+                }
+
+                if (event.key === 'Tab' && this.isFocusMode()) {
+                    this.trapFocus(event)
                 }
             })
             this.listen(document, 'click', (event) => this.onDocumentClick(event), { capture: true })
@@ -61,6 +66,7 @@ export default function newHere(config) {
         },
 
         destroy() {
+            this.setFocusMode(false)
             this.observer?.disconnect()
             this.listeners.forEach(([target, type, handler, options]) => target.removeEventListener(type, handler, options))
             this.layer?.remove()
@@ -316,7 +322,17 @@ export default function newHere(config) {
         },
 
         render() {
+            const opened = this.items.find((item) => item.key === this.openKey)
+
+            const entering = Boolean(opened) && this.usesBackdrop() && ! this.isFocusMode()
+
             this.layer.replaceChildren()
+            this.setFocusMode(Boolean(opened) && this.usesBackdrop())
+
+            if (opened && this.usesBackdrop()) {
+                this.revealAnchor(opened)
+                this.layer.append(...this.backdrop(entering))
+            }
 
             this.items.forEach((item, index) => {
                 const beacon = document.createElement('button')
@@ -339,10 +355,145 @@ export default function newHere(config) {
 
             this.position()
 
-            // Never steal focus on page load, nor from an open modal (its focus
-            // trap would pull it back anyway).
-            if (this.openedByUser && ! this.openModal()) {
+            // In focus mode the hint behaves like a dialog and takes focus.
+            // Otherwise never steal it on page load, nor from an open modal.
+            if (this.isFocusMode() || (this.openedByUser && ! this.openModal())) {
                 this.layer.querySelector('.nh-popover [data-nh-primary]')?.focus({ preventScroll: true })
+            }
+        },
+
+        usesBackdrop() {
+            return config.backdrop !== false
+        },
+
+        isFocusMode() {
+            return this.inertElements.length > 0
+        },
+
+        /**
+         * Focus mode: everything but the layer becomes `inert` (no clicks, no
+         * keyboard, hidden from screen readers) and gets blurred, until the
+         * user goes through the hints or presses Escape.
+         */
+        setFocusMode(enabled) {
+            if (! enabled) {
+                this.inertElements.forEach((element) => {
+                    element.inert = false
+                })
+                this.inertElements = []
+                document.documentElement.classList.remove('nh-focus-mode')
+
+                return
+            }
+
+            if (this.isFocusMode()) {
+                return
+            }
+
+            this.inertElements = [...document.body.children].filter(
+                (element) => element !== this.layer && ! element.inert && element.tagName !== 'SCRIPT',
+            )
+            this.inertElements.forEach((element) => {
+                element.inert = true
+            })
+            document.documentElement.classList.add('nh-focus-mode')
+        },
+
+        /**
+         * Four blurred panes around the anchor, plus a ring on the anchor
+         * itself. The anchor stays sharp but is not clickable either.
+         */
+        backdrop(entering = false) {
+            return ['top', 'right', 'bottom', 'left', 'spotlight'].map((side) => {
+                const pane = document.createElement('div')
+                pane.className = side === 'spotlight' ? 'nh-spotlight' : 'nh-backdrop'
+                pane.classList.toggle('nh-enter', entering)
+                pane.dataset.side = side
+                pane.setAttribute('aria-hidden', 'true')
+
+                return pane
+            })
+        },
+
+        revealAnchor(item) {
+            const rect = this.rectOf(item.anchor)
+
+            if (rect.top >= 0 && rect.bottom <= window.innerHeight) {
+                return
+            }
+
+            const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+            item.anchor.scrollIntoView({ block: 'center', behavior: reduced ? 'auto' : 'smooth' })
+        },
+
+        positionBackdrop(item) {
+            const panes = this.layer.querySelectorAll('[data-side]')
+
+            if (! panes.length) {
+                return
+            }
+
+            const padding = 6
+            const width = window.innerWidth
+            const height = window.innerHeight
+            const rect = item ? this.rectOf(item.anchor) : null
+
+            const hole = rect
+                ? {
+                      top: Math.max(0, rect.top - padding),
+                      left: Math.max(0, rect.left - padding),
+                      right: Math.min(width, rect.right + padding),
+                      bottom: Math.min(height, rect.bottom + padding),
+                  }
+                : { top: 0, left: 0, right: 0, bottom: 0 }
+
+            const place = (pane, top, left, paneWidth, paneHeight) => {
+                pane.style.top = `${top}px`
+                pane.style.left = `${left}px`
+                pane.style.width = `${Math.max(0, paneWidth)}px`
+                pane.style.height = `${Math.max(0, paneHeight)}px`
+            }
+
+            panes.forEach((pane) => {
+                switch (pane.dataset.side) {
+                    case 'top':
+                        place(pane, 0, 0, width, hole.top)
+                        break
+                    case 'bottom':
+                        place(pane, hole.bottom, 0, width, height - hole.bottom)
+                        break
+                    case 'left':
+                        place(pane, hole.top, 0, hole.left, hole.bottom - hole.top)
+                        break
+                    case 'right':
+                        place(pane, hole.top, hole.right, width - hole.right, hole.bottom - hole.top)
+                        break
+                    default:
+                        place(pane, hole.top, hole.left, hole.right - hole.left, hole.bottom - hole.top)
+                }
+            })
+        },
+
+        trapFocus(event) {
+            const focusable = [...this.layer.querySelectorAll('.nh-popover button')]
+
+            if (! focusable.length) {
+                return
+            }
+
+            const first = focusable[0]
+            const last = focusable[focusable.length - 1]
+
+            if (! this.layer.contains(document.activeElement)) {
+                event.preventDefault()
+                first.focus()
+            } else if (event.shiftKey && document.activeElement === first) {
+                event.preventDefault()
+                last.focus()
+            } else if (! event.shiftKey && document.activeElement === last) {
+                event.preventDefault()
+                first.focus()
             }
         },
 
@@ -352,7 +503,12 @@ export default function newHere(config) {
             const titleId = `nh-title-${index}`
 
             popover.className = 'nh-popover'
+            popover.lang = (config.locale ?? 'en').replace('_', '-')
             popover.setAttribute('role', 'dialog')
+
+            if (this.usesBackdrop()) {
+                popover.setAttribute('aria-modal', 'true')
+            }
             popover.setAttribute('aria-labelledby', titleId)
             popover.dataset.key = item.key
 
@@ -422,6 +578,8 @@ export default function newHere(config) {
 
         position() {
             const margin = 8
+
+            this.positionBackdrop(this.items.find((item) => item.key === this.openKey))
 
             this.layer.querySelectorAll('.nh-beacon').forEach((beacon) => {
                 const item = this.items.find((candidate) => candidate.key === beacon.dataset.key)
@@ -516,6 +674,7 @@ export default function newHere(config) {
             this.items = []
             this.openKey = null
             this.render()
+            this.setFocusMode(false)
             this.observer?.disconnect()
             Promise.resolve()
                 .then(() => this.$wire?.optOut())

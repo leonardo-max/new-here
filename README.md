@@ -36,7 +36,9 @@ New Here announces features **in context**:
 - **Right where it lives.** The hint points at the new thing itself, not at a modal listing everything.
 - **Once per person.** Dismissals are stored in the database, so a user who saw it on the laptop won't see it again on the phone.
 - **Respects permissions.** If a user can't see the button, they don't get the hint — and it's not marked as seen behind their back.
+- **Focus mode.** While a hint is open, the rest of the page is blurred and locked — no clicks, no tabbing — until the user goes through the hints. <kbd>Esc</kbd> always lets them out.
 - **No spam.** Up to 3 hints per page (configurable), queued in reading order. Announcements expire on their own after 30 days.
+- **Speaks your users' language.** Follows the app locale out of the box — English, Spanish and Brazilian Portuguese included — and can be forced per panel or per user.
 - **Newcomers aren't flooded.** Features released before a user signed up aren't announced to them: for them, everything is new.
 - **Ship ahead.** A future `since` date schedules the announcement — merge today, it appears on release day.
 - **AI-agent ready.** Ships a [Laravel Boost](https://laravel.com/docs/boost) guideline and skill so Claude Code, Cursor, Codex & co. mark what they build automatically.
@@ -156,6 +158,44 @@ Action::make('duplicate')
     ->isNew('2026-10-08', 'Copy an order with one click.');
 ```
 
+## Focus mode
+
+By default, an open hint works like a small guided tour: the page behind it is blurred and made [`inert`](https://developer.mozilla.org/docs/Web/HTML/Global_attributes/inert) — nothing can be clicked, focused or read by a screen reader — and the element being presented is outlined. The user moves on with **Next**, finishes with **Got it**, skips with **Dismiss all**, or leaves with <kbd>Esc</kbd> (the hint comes back on the next visit).
+
+![Focus mode, in Brazilian Portuguese](art/screenshot-focus-pt-br.png)
+
+Prefer plain tooltips that never block the page?
+
+```php
+NewHerePlugin::make()->backdrop(false);
+```
+
+## Language
+
+The buttons of the hint (*Next*, *Got it*, *Dismiss all*...) follow the application locale (`config('app.locale')`). English, Spanish and Brazilian Portuguese ship with the package, and close variants are resolved for you: `pt`, `pt-BR` and `pt_br` use Brazilian Portuguese, `es_AR` or `es-MX` use Spanish, and anything else falls back to your `fallback_locale`, then English.
+
+Force a language for the whole panel, or follow a per-user preference:
+
+```php
+NewHerePlugin::make()->locale('pt_BR');
+
+NewHerePlugin::make()->locale(fn (): ?string => auth()->user()?->locale);
+```
+
+or in `config/new-here.php`: `'locale' => 'es'`.
+
+The hint text itself is yours: write it in the panel's language, or pass it through `__()`:
+
+```php
+Action::make('export')->isNew('2026-10-08', __('orders.hints.export'));
+```
+
+Need another language? Publish the translations and add a folder:
+
+```bash
+php artisan vendor:publish --tag=new-here-translations   # lang/vendor/new-here/{locale}/new-here.php
+```
+
 ## Configuration
 
 Zero configuration is required. To customise a panel, add the plugin yourself — your instance replaces the automatic one:
@@ -172,6 +212,8 @@ public function panel(Panel $panel): Panel
                 ->expiresAfterDays(45)
                 ->maxPerPage(2)
                 ->openFirstHintAutomatically(false)   // only beacons until clicked
+                ->backdrop(false)                     // no blur, never block the page
+                ->locale('es')                        // or a closure, per user
                 ->ignoreFeaturesOlderThanUser(false)  // show the past to newcomers too
                 ->enabled(fn(): bool => ! session()->has('impersonator')),
         );
@@ -190,13 +232,14 @@ return [
     'expires_after_days' => 30,
     'max_per_page' => 3,
     'open_first_hint_automatically' => true,
+    'backdrop' => true,                      // focus mode
+    'locale' => null,                        // null = app locale
     'ignore_features_older_than_user' => true,
     'user_created_at_attribute' => 'created_at',
     'table' => 'new_here_seen',
 ];
 ```
 
-Translations ship in English, Brazilian Portuguese and Spanish. Publish them with `php artisan vendor:publish --tag=new-here-translations`.
 
 ### Replaying hints
 

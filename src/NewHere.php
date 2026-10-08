@@ -20,6 +20,7 @@ use Filament\Tables\Table;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Str;
 use LeonardoMax\NewHere\Attributes\IsNew;
 use LeonardoMax\NewHere\Models\SeenFeature;
@@ -365,6 +366,44 @@ class NewHere
         } catch (Throwable) {
             return null;
         }
+    }
+
+    /**
+     * The language of the hint buttons: the one forced on the plugin or in
+     * the config, else the app locale, resolved to the closest shipped (or
+     * published) translation. `pt-BR`, `pt` and `pt_br` all give `pt_BR`;
+     * `es_AR` gives `es`; anything unknown falls back to the app fallback,
+     * then English.
+     */
+    public function locale(): string
+    {
+        $wanted = $this->plugin()?->getLocale() ?? config('new-here.locale') ?? app()->getLocale();
+
+        foreach ($this->localeCandidates((string) $wanted) as $candidate) {
+            if (Lang::hasForLocale('new-here::new-here.got_it', $candidate)) {
+                return $candidate;
+            }
+        }
+
+        return 'en';
+    }
+
+    /**
+     * @return array<int, string>
+     */
+    protected function localeCandidates(string $locale): array
+    {
+        $parts = preg_split('/[-_]/', trim($locale)) ?: [];
+        $language = strtolower($parts[0] ?? '');
+        $region = strtoupper($parts[1] ?? '');
+
+        return array_values(array_unique(array_filter([
+            $region !== '' ? "{$language}_{$region}" : null,
+            $language,
+            ['pt' => 'pt_BR'][$language] ?? null,
+            (string) config('app.fallback_locale', 'en'),
+            'en',
+        ])));
     }
 
     public function expiresAfterDays(): int

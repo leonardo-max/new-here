@@ -76,12 +76,16 @@ $panel->plugin(
         ->expiresAfterDays(45)
         ->maxPerPage(2)
         ->openFirstHintAutomatically(false)
+        ->backdrop(false)                 // default: blur and lock the page while a hint is open
+        ->locale('pt_BR')                 // default: app locale; accepts a closure per user
         ->ignoreFeaturesOlderThanUser()   // default: newcomers don't get the past
         ->enabled(fn() => ! session('impersonating')),
 );
 ```
 
-Or publish `config/new-here.php` (`php artisan vendor:publish --tag=new-here-config`): `panels`, `expires_after_days`, `max_per_page`, `open_first_hint_automatically`, `ignore_features_older_than_user`, `table`.
+Or publish `config/new-here.php` (`php artisan vendor:publish --tag=new-here-config`): `panels`, `expires_after_days`, `max_per_page`, `open_first_hint_automatically`, `backdrop`, `locale`, `ignore_features_older_than_user`, `table`.
+
+The plugin's buttons are translated (en, es, pt_BR); the hint text is yours — write it in the panel's language or wrap it in `__()`.
 
 ## Testing a marked component
 

@@ -37,22 +37,25 @@ class Tracker extends Component
         }
 
         $plugin = NewHerePlugin::get();
+        $locale = $newHere->locale();
 
         return [
             'seen' => $seen,
             'notBefore' => $newHere->notBeforeFor($user),
             'pages' => $newHere->pagesFor($panel),
             'maxPerPage' => $plugin?->getMaxPerPage() ?? (int) config('new-here.max_per_page', 3),
-            'autoOpen' => $plugin?->opensFirstHintAutomatically() ?? true,
-            'labels' => [
-                'badge' => __('new-here::new-here.badge'),
-                'gotIt' => __('new-here::new-here.got_it'),
-                'next' => __('new-here::new-here.next'),
-                'dismissAll' => __('new-here::new-here.dismiss_all'),
-                'optOut' => __('new-here::new-here.opt_out'),
-                'beacon' => __('new-here::new-here.beacon'),
-                'counter' => __('new-here::new-here.counter'),
-            ],
+            'autoOpen' => $plugin?->opensFirstHintAutomatically() ?? (bool) config('new-here.open_first_hint_automatically', true),
+            'backdrop' => $plugin?->hasBackdrop() ?? (bool) config('new-here.backdrop', true),
+            'locale' => $locale,
+            'labels' => collect([
+                'badge' => 'badge',
+                'gotIt' => 'got_it',
+                'next' => 'next',
+                'dismissAll' => 'dismiss_all',
+                'optOut' => 'opt_out',
+                'beacon' => 'beacon',
+                'counter' => 'counter',
+            ])->map(fn (string $key): string => __("new-here::new-here.{$key}", [], $locale))->all(),
         ];
     }
 
