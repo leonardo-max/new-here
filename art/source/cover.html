@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>New Here — cover</title>
+<style>
+    :root {
+        --amber-50: #fffbeb;
+        --amber-100: #fef3c7;
+        --amber-400: #fbbf24;
+        --amber-500: #f59e0b;
+        --amber-600: #d97706;
+        --amber-700: #b45309;
+        --ink: #18181b;
+        --muted: #71717a;
+        --line: #e4e4e7;
+    }
+
+    * { box-sizing: border-box; margin: 0; }
+
+    html, body {
+        width: 1280px;
+        height: 720px;
+        overflow: hidden;
+    }
+
+    body {
+        font-family: "Segoe UI Variable Display", "Segoe UI", system-ui, sans-serif;
+        color: var(--ink);
+        background:
+            radial-gradient(900px 500px at 88% -10%, var(--amber-100), transparent 60%),
+            radial-gradient(700px 400px at -10% 110%, #fde68a55, transparent 60%),
+            #fafaf9;
+        display: grid;
+        grid-template-columns: 520px 1fr;
+        align-items: center;
+        gap: 40px;
+        padding: 0 72px;
+    }
+
+    .copy .eyebrow {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: .06em;
+        text-transform: uppercase;
+        color: var(--amber-700);
+    }
+
+    .copy h1 {
+        margin-top: 18px;
+        font-size: 92px;
+        line-height: .95;
+        font-weight: 800;
+        letter-spacing: -.035em;
+    }
+
+    .copy h1 .dot {
+        display: inline-block;
+        width: 22px;
+        height: 22px;
+        margin-left: 6px;
+        border-radius: 50%;
+        background: var(--amber-500);
+        box-shadow: 0 0 0 8px #f59e0b33, 0 0 0 18px #f59e0b1a;
+        vertical-align: super;
+    }
+
+    .copy p {
+        margin-top: 26px;
+        font-size: 25px;
+        line-height: 1.35;
+        color: #3f3f46;
+        max-width: 470px;
+    }
+
+    .copy code {
+        display: inline-block;
+        margin-top: 30px;
+        padding: 12px 18px;
+        border-radius: 12px;
+        background: var(--ink);
+        color: #fafafa;
+        font: 500 19px/1.2 "Cascadia Code", Consolas, monospace;
+        font-variant-ligatures: none;
+    }
+
+    .copy code .m { color: var(--amber-400); }
+    .copy code .s { color: #86efac; }
+
+    /* Mock panel */
+    .panel {
+        position: relative;
+        border-radius: 18px;
+        background: #fff;
+        box-shadow: 0 0 0 1px #0000000d, 0 30px 60px -20px #0000002e;
+        overflow: visible;
+    }
+
+    .panel-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 22px 26px 18px;
+    }
+
+    .panel-top h2 { font-size: 26px; font-weight: 700; letter-spacing: -.01em; }
+
+    .actions { display: flex; gap: 10px; }
+
+    .btn {
+        position: relative;
+        padding: 9px 16px;
+        border-radius: 10px;
+        font-size: 15px;
+        font-weight: 600;
+        border: 1px solid var(--line);
+        color: #3f3f46;
+        background: #fff;
+    }
+
+    .btn.primary {
+        background: var(--amber-600);
+        border-color: var(--amber-600);
+        color: #fff;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 15px;
+    }
+
+    th, td {
+        padding: 13px 26px;
+        text-align: left;
+        border-top: 1px solid #f4f4f5;
+    }
+
+    th {
+        position: relative;
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--muted);
+        background: #fafafa;
+    }
+
+    td { color: #3f3f46; }
+    td .pill {
+        padding: 3px 10px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 600;
+        background: #dcfce7;
+        color: #166534;
+    }
+    td .pill.wait { background: var(--amber-100); color: var(--amber-700); }
+
+    .beacon {
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: var(--amber-500);
+        box-shadow: 0 0 0 2px #fff;
+    }
+
+    .beacon::before, .beacon::after {
+        content: "";
+        position: absolute;
+        inset: -9px;
+        border-radius: 50%;
+        background: #f59e0b40;
+    }
+
+    .beacon::after { inset: -18px; background: #f59e0b1c; }
+
+    .popover {
+        position: absolute;
+        width: 300px;
+        padding: 16px 18px 14px;
+        border-radius: 14px;
+        background: #fff;
+        box-shadow: 0 0 0 1px #0000000f, 0 18px 40px -12px #00000040;
+        font-size: 15px;
+        line-height: 1.4;
+    }
+
+    .popover::before {
+        content: "";
+        position: absolute;
+        top: -6px;
+        left: 112px;
+        width: 12px;
+        height: 12px;
+        background: #fff;
+        transform: rotate(45deg);
+        box-shadow: -1px -1px 0 0 #0000000f;
+    }
+
+    .popover .head { display: flex; justify-content: space-between; align-items: center; }
+
+    .badge {
+        padding: 2px 9px;
+        border-radius: 999px;
+        background: #f59e0b26;
+        color: var(--amber-700);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: .05em;
+        text-transform: uppercase;
+    }
+
+    .counter { color: var(--muted); font-size: 13px; }
+    .popover .t { margin-top: 8px; font-weight: 700; }
+    .popover .h { margin-top: 3px; color: #52525b; }
+
+    .popover .foot {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 14px;
+    }
+
+    .popover .foot span { color: var(--muted); font-size: 14px; }
+
+    .popover .foot b {
+        padding: 7px 14px;
+        border-radius: 9px;
+        background: var(--amber-600);
+        color: #fff;
+        font-size: 14px;
+    }
+</style>
+</head>
+<body>
+    <section class="copy">
+        <span class="eyebrow">Filament plugin</span>
+        <h1>New Here<span class="dot"></span></h1>
+        <p>Show every user what&rsquo;s new, right on the button, column or page you just shipped.</p>
+        <code><span class="m">-&gt;isNew</span>(<span class="s">'2026-10-08'</span>)</code>
+    </section>
+
+    <section class="panel">
+        <div class="panel-top">
+            <h2>Orders</h2>
+            <div class="actions">
+                <span class="btn">Import</span>
+                <span class="btn primary" id="export">Export</span>
+            </div>
+        </div>
+        <table>
+            <thead>
+                <tr><th>Number</th><th>Customer</th><th id="tracking">Tracking code</th><th>Status</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>#1042</td><td>Ada Lovelace</td><td>BR4471-9A</td><td><span class="pill">Shipped</span></td></tr>
+                <tr><td>#1041</td><td>Alan Turing</td><td>BR4469-2C</td><td><span class="pill wait">Packing</span></td></tr>
+                <tr><td>#1040</td><td>Grace Hopper</td><td>BR4466-7F</td><td><span class="pill">Shipped</span></td></tr>
+                <tr><td>#1039</td><td>Katherine Johnson</td><td>BR4460-1D</td><td><span class="pill">Shipped</span></td></tr>
+            </tbody>
+        </table>
+
+        <span class="beacon" style="top: 16px; right: 22px"></span>
+        <span class="beacon" style="top: 70px; left: 424px"></span>
+
+        <div class="popover" style="top: 108px; left: 300px">
+            <div class="head"><span class="badge">New</span><span class="counter">1 of 2</span></div>
+            <p class="t">Tracking code</p>
+            <p class="h">See where each order is without opening it.</p>
+            <div class="foot"><span>Dismiss all</span><b>Next</b></div>
+        </div>
+    </section>
+</body>
+</html>

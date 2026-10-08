@@ -1,0 +1,102 @@
+{
+    "name": "leonardo-max/new-here",
+    "description": "Show each user what is new right where it lives: pulsing beacons and contextual hints on the exact buttons, columns, fields and pages you just shipped in your Filament panel. Seen once per user, stored in the database, AI-agent ready.",
+    "keywords": [
+        "laravel",
+        "filament",
+        "filamentphp",
+        "filament-plugin",
+        "filament-v5",
+        "livewire",
+        "new-here",
+        "whats-new",
+        "what's new",
+        "onboarding",
+        "user-onboarding",
+        "product-tour",
+        "feature-tour",
+        "feature-discovery",
+        "feature-highlight",
+        "feature-announcement",
+        "new-feature",
+        "release-notes",
+        "changelog",
+        "announcements",
+        "hotspot",
+        "beacon",
+        "spotlight",
+        "tooltip",
+        "user-adoption",
+        "product-adoption",
+        "in-app-messaging",
+        "admin-panel",
+        "laravel-boost",
+        "ai-guidelines"
+    ],
+    "homepage": "https://github.com/leonardo-max/new-here",
+    "support": {
+        "issues": "https://github.com/leonardo-max/new-here/issues",
+        "source": "https://github.com/leonardo-max/new-here",
+        "docs": "https://github.com/leonardo-max/new-here#readme"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Leonardo Max",
+            "email": "l3onardomax@hotmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "filament/filament": "^5.0",
+        "spatie/laravel-package-tools": "^1.15.0"
+    },
+    "require-dev": {
+        "larastan/larastan": "^3.0",
+        "laravel/pint": "^1.0",
+        "nunomaduro/collision": "^8.0",
+        "orchestra/testbench": "^9.0|^10.0|^11.0",
+        "pestphp/pest": "^3.7|^4.0",
+        "pestphp/pest-plugin-arch": "^3.0|^4.0",
+        "pestphp/pest-plugin-laravel": "^3.0|^4.0",
+        "pestphp/pest-plugin-livewire": "^3.0|^4.0",
+        "rector/rector": "^2.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "LeonardoMax\\NewHere\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "LeonardoMax\\NewHere\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": "@php ./vendor/bin/testbench package:discover --ansi",
+        "analyse": "phpstan analyse",
+        "lint": "pint",
+        "refactor": "rector",
+        "test": "pest",
+        "test:lint": "pint --test",
+        "test:refactor": "rector --dry-run"
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "LeonardoMax\\NewHere\\NewHereServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

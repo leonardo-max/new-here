@@ -1,0 +1,22 @@
+includes:
+    - vendor/larastan/larastan/extension.neon
+
+parameters:
+    level: 6
+    paths:
+        - src
+        - config
+        - database
+    tmpDir: build/phpstan
+    checkOctaneCompatibility: true
+    checkModelProperties: true
+
+    ignoreErrors:
+        # Filament binds macro closures to the component, which static analysis cannot see.
+        -
+            identifiers: [argument.type, return.type]
+            path: src/NewHereServiceProvider.php
+        # Package views live under the `new-here::` namespace, unknown to Larastan.
+        -
+            message: '#expects view-string\|null, string given#'
+            path: src/Livewire/Tracker.php
