@@ -45,7 +45,7 @@ New Here announces features **in context**:
 
 ## Requirements
 
-- PHP 8.2+
+- PHP 8.3+
 - Laravel 11, 12 or 13
 - Filament 5
 
