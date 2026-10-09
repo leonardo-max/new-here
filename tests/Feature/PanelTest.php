@@ -3,6 +3,8 @@
 use Filament\Facades\Filament;
 use Filament\Panel;
 use Illuminate\Support\Facades\Date;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use LeonardoMax\NewHere\Livewire\Tracker;
 use LeonardoMax\NewHere\Models\SeenFeature;
 use LeonardoMax\NewHere\NewHere;
@@ -155,6 +157,22 @@ it('only lets resources claim the URLs below them', function (): void {
     Filament::setCurrentPanel(Filament::getPanel('admin'));
 
     expect(livewire(Tracker::class)->viewData('config')['pages'][0]['prefix'])->toBeFalse();
+});
+
+it('keeps the panel working when the migration has not run yet', function (): void {
+    Schema::drop(config('new-here.table'));
+    Log::spy();
+
+    $this->actingAs(user());
+
+    $this->get(ProductsPage::getUrl())
+        ->assertSuccessful()
+        ->assertDontSee('newHere(', escape: false);
+
+    Filament::setCurrentPanel(Filament::getPanel('admin'));
+    livewire(Tracker::class)->call('markSeen', ['a'])->assertOk();
+
+    Log::shouldHaveReceived('warning')->once();
 });
 
 it('keeps seen rows per user', function (): void {

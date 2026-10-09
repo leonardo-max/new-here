@@ -2,6 +2,10 @@
 
 All notable changes to `new-here` will be documented in this file.
 
+## v1.1.4 - 2026-10-09
+
+- The panel keeps working when the `new_here_seen` table does not exist yet (fresh deploy before the migration, test schemas): hints are simply off, and one warning per hour is logged. Before, every panel page returned a 500.
+
 ## v1.1.3 - 2026-10-09
 
 - `new-here:install` no longer runs `boost:update` itself: its nested interactive questions were not rendered in some terminals (Windows, IDE consoles) and the command looked frozen. It now prints the command to run.

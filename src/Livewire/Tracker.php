@@ -4,6 +4,9 @@ namespace LeonardoMax\NewHere\Livewire;
 
 use Filament\Facades\Filament;
 use Illuminate\Contracts\View\View;
+use Illuminate\Database\QueryException;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use LeonardoMax\NewHere\NewHere;
 use LeonardoMax\NewHere\NewHerePlugin;
 use Livewire\Attributes\Renderless;
@@ -30,7 +33,15 @@ class Tracker extends Component
             return [];
         }
 
-        $seen = $newHere->seenKeys($user);
+        try {
+            $seen = $newHere->seenKeys($user);
+        } catch (QueryException $exception) {
+            // Usually the migration has not run yet (fresh deploy, test
+            // schema). The panel must keep working: no hints until it does.
+            $this->warnOnce($exception);
+
+            return [];
+        }
 
         if (in_array(NewHere::OPT_OUT_KEY, $seen, true)) {
             return [];
@@ -67,8 +78,14 @@ class Tracker extends Component
     {
         $user = Filament::auth()->user();
 
-        if ($user !== null) {
+        if ($user === null) {
+            return;
+        }
+
+        try {
             $newHere->markSeen($user, $keys);
+        } catch (QueryException $exception) {
+            $this->warnOnce($exception);
         }
     }
 
@@ -77,9 +94,32 @@ class Tracker extends Component
     {
         $user = Filament::auth()->user();
 
-        if ($user !== null) {
-            $newHere->optOut($user);
+        if ($user === null) {
+            return;
         }
+
+        try {
+            $newHere->optOut($user);
+        } catch (QueryException $exception) {
+            $this->warnOnce($exception);
+        }
+    }
+
+    /**
+     * One log line per hour is enough to notice the missing migration
+     * without flooding the log on every page view.
+     */
+    protected function warnOnce(QueryException $exception): void
+    {
+        try {
+            if (! Cache::add('new-here:query-failed', true, now()->addHour())) {
+                return;
+            }
+        } catch (\Throwable) {
+            // No cache available: log anyway.
+        }
+
+        Log::warning('[new-here] Hints are disabled: ' . $exception->getMessage() . ' Did you run `php artisan migrate`?');
     }
 
     public function render(): View
