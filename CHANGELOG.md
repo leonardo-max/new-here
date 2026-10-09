@@ -4,12 +4,7 @@ All notable changes to `new-here` will be documented in this file.
 
 ## v1.1.2 - 2026-10-09
 
-Fix composer.json: a keyword with an apostrophe was rejected by Packagist.
-
-## v1.1.1 — Requirements and CI - 2026-10-09
-
-- Requires PHP 8.3+ and Filament 5.9+ (earlier Filament 5 releases have security advisories or pull a Livewire version that breaks on current Laravel).
-- CI: PHP 8.3-8.5 x Laravel 11-13, lowest and stable dependencies, Linux and Windows.
+- Fix composer.json: a keyword with an apostrophe was rejected by Packagist.
 
 ## v1.1.1 - 2026-10-09
 
