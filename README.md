@@ -47,7 +47,7 @@ New Here announces features **in context**:
 
 - PHP 8.3+
 - Laravel 11, 12 or 13
-- Filament 5
+- Filament 5.9+
 
 ## Installation
 
