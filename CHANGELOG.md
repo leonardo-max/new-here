@@ -2,6 +2,11 @@
 
 All notable changes to `new-here` will be documented in this file.
 
+## v1.1.1 - 2026-10-09
+
+- Requires PHP 8.3+ and Filament 5.9+. Earlier Filament 5 releases have security advisories or pull a Livewire version that breaks on current Laravel.
+- CI on GitHub Actions: PHP 8.3-8.5, Laravel 11-13, lowest and stable dependencies, Linux and Windows.
+
 ## v1.1.0 - 2026-10-08
 
 - **Focus mode**, on by default: while a hint is open, the rest of the page is blurred and made `inert` (no clicks, no keyboard), the presented element is outlined, and focus stays in the hint until the user goes through it or presses Escape. Turn it off with `->backdrop(false)` or `'backdrop' => false`.
