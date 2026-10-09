@@ -2,6 +2,10 @@
 
 All notable changes to `new-here` will be documented in this file.
 
+## v1.1.3 - 2026-10-09
+
+- `new-here:install` no longer runs `boost:update` itself: its nested interactive questions were not rendered in some terminals (Windows, IDE consoles) and the command looked frozen. It now prints the command to run.
+
 ## v1.1.2 - 2026-10-09
 
 - Fix composer.json: a keyword with an apostrophe was rejected by Packagist.

@@ -147,7 +147,7 @@ php artisan new-here:list --json     # for scripts and agents
 
 If your project uses AI coding agents, the best time to announce a feature is the moment it is written. New Here makes that the default.
 
-**With Laravel Boost**, nothing to do: New Here ships a [package guideline](resources/boost/guidelines/core.blade.php) and a [skill](resources/boost/skills/new-here/SKILL.md). `php artisan boost:install` / `boost:update` picks them up (the install command offers to run it).
+**With Laravel Boost**, nothing to do: New Here ships a [package guideline](resources/boost/guidelines/core.blade.php) and a [skill](resources/boost/skills/new-here/SKILL.md). `php artisan boost:install` / `boost:update` picks them up (the install command reminds you to run it).
 
 **Without Boost**, `php artisan new-here:install` writes the same guideline into every agent file it finds — `AGENTS.md`, `CLAUDE.md`, `GEMINI.md`, `.github/copilot-instructions.md`, `.junie/guidelines.md` (creating `AGENTS.md` if none exists) — and copies the skill to `.claude/skills/` and `.agents/skills/`. The block sits between `<!-- new-here:start -->` markers, so running the command again updates it instead of duplicating it.
 

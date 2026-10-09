@@ -6,8 +6,6 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\File;
 
-use function Laravel\Prompts\confirm;
-
 /**
  * One command after `composer require`: creates the table and teaches the
  * project's AI agents to announce what they ship.
@@ -62,13 +60,11 @@ class InstallCommand extends Command
     protected function installAiGuidance(): void
     {
         if ($this->hasBoost()) {
+            // Not run from here: `boost:update` asks its own interactive
+            // questions, which some terminals (Windows, IDE consoles) do not
+            // render when nested in another command, leaving it hanging.
             $this->components->info('Laravel Boost found: New Here ships a Boost guideline and skill.');
-
-            if ($this->confirmed('Run `php artisan boost:update` to load them now?')) {
-                $this->call('boost:update', ['--discover' => true]);
-            } else {
-                $this->components->twoColumnDetail('Later', '<fg=yellow>php artisan boost:update</>');
-            }
+            $this->components->twoColumnDetail('Load them with', '<fg=yellow>php artisan boost:update</>');
 
             return;
         }
@@ -174,6 +170,6 @@ class InstallCommand extends Command
             return true;
         }
 
-        return confirm($question, default: true);
+        return $this->confirm($question, true);
     }
 }
