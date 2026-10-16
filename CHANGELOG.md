@@ -2,6 +2,10 @@
 
 All notable changes to `new-here` will be documented in this file.
 
+## v1.1.5 - 2026-10-16
+
+- Focus mode no longer locks the page behind a hint the user cannot see. When the highlighted element sat beyond a horizontal scroll (a column at the end of a wide table), the hint opened out of view and the whole page stayed blurred and inert, with no button to press. Now the hint scrolls its element into view on both axes, focus mode is lifted while the element is off screen and comes back with it, and clicking the blurred area closes the hint, like Escape.
+
 ## v1.1.4 - 2026-10-09
 
 - The panel keeps working when the `new_here_seen` table does not exist yet (fresh deploy before the migration, test schemas): hints are simply off, and one warning per hour is logged. Before, every panel page returned a 500.

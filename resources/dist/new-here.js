@@ -402,6 +402,8 @@ export default function newHere(config) {
         /**
          * Four blurred panes around the anchor, plus a ring on the anchor
          * itself. The anchor stays sharp but is not clickable either.
+         * Clicking the blurred area closes the hint, like Escape: the page
+         * must never stay locked behind a hint the user cannot reach.
          */
         backdrop(entering = false) {
             return ['top', 'right', 'bottom', 'left', 'spotlight'].map((side) => {
@@ -411,20 +413,38 @@ export default function newHere(config) {
                 pane.dataset.side = side
                 pane.setAttribute('aria-hidden', 'true')
 
+                if (side !== 'spotlight') {
+                    pane.addEventListener('click', () => this.close())
+                }
+
                 return pane
             })
         },
 
+        /**
+         * Brings the anchor into view on both axes: a column at the end of a
+         * wide table sits beyond a horizontal scroll, not below the fold.
+         */
         revealAnchor(item) {
             const rect = this.rectOf(item.anchor)
+            const fitsVertically = rect.top >= 0 && rect.bottom <= window.innerHeight
+            const fitsHorizontally = rect.left >= 0 && rect.right <= window.innerWidth
 
-            if (rect.top >= 0 && rect.bottom <= window.innerHeight) {
+            if (fitsVertically && fitsHorizontally) {
                 return
             }
 
             const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
-            item.anchor.scrollIntoView({ block: 'center', behavior: reduced ? 'auto' : 'smooth' })
+            item.anchor.scrollIntoView({
+                block: fitsVertically ? 'nearest' : 'center',
+                inline: fitsHorizontally ? 'nearest' : 'center',
+                behavior: reduced ? 'auto' : 'smooth',
+            })
+        },
+
+        isOffscreen(rect) {
+            return rect.bottom < 0 || rect.top > window.innerHeight || rect.right < 0 || rect.left > window.innerWidth
         },
 
         positionBackdrop(item) {
@@ -434,10 +454,25 @@ export default function newHere(config) {
                 return
             }
 
+            const rect = item ? this.rectOf(item.anchor) : null
+
+            // An anchor out of view also hides its popover, so focus mode
+            // would leave a blurred, inert page with nothing to press. Lift it
+            // until the anchor comes back (scrolling, resizing).
+            const lost = ! rect || this.isOffscreen(rect)
+
+            panes.forEach((pane) => {
+                pane.hidden = lost
+            })
+            this.setFocusMode(! lost)
+
+            if (lost) {
+                return
+            }
+
             const padding = 6
             const width = window.innerWidth
             const height = window.innerHeight
-            const rect = item ? this.rectOf(item.anchor) : null
 
             const hole = rect
                 ? {
@@ -591,7 +626,7 @@ export default function newHere(config) {
                 }
 
                 const rect = this.rectOf(item.anchor)
-                const offscreen = rect.bottom < 0 || rect.top > window.innerHeight || rect.right < 0 || rect.left > window.innerWidth
+                const offscreen = this.isOffscreen(rect)
 
                 beacon.hidden = offscreen
                 beacon.style.top = `${rect.top - 4}px`
