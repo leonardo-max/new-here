@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://raw.githubusercontent.com/leonardo-max/new-here/main/art/cover.png" alt="New Here — show every user what's new, right on the button, column or page you just shipped" width="100%">
+    <img class="filament-hidden" src="https://raw.githubusercontent.com/leonardo-max/new-here/main/art/cover.png" alt="New Here — show every user what's new, right on the button, column or page you just shipped" width="100%">
 </p>
 
 <p align="center">
@@ -25,7 +25,7 @@ That's the whole API. No tour builder, no step definitions, no selectors.
 
 | Light | Dark |
 |---|---|
-| ![Hints in a light panel](art/screenshot-light.png) | ![Hints in a dark panel](art/screenshot-dark.png) |
+| ![Hints in a light panel](https://raw.githubusercontent.com/leonardo-max/new-here/main/art/screenshot-light.png) | ![Hints in a dark panel](https://raw.githubusercontent.com/leonardo-max/new-here/main/art/screenshot-dark.png) |
 
 ## Why
 
@@ -36,7 +36,7 @@ New Here announces features **in context**:
 - **Right where it lives.** The hint points at the new thing itself, not at a modal listing everything.
 - **Once per person.** Dismissals are stored in the database, so a user who saw it on the laptop won't see it again on the phone.
 - **Respects permissions.** If a user can't see the button, they don't get the hint — and it's not marked as seen behind their back.
-- **Focus mode.** While a hint is open, the rest of the page is blurred and locked — no clicks, no tabbing — until the user goes through the hints. <kbd>Esc</kbd> always lets them out.
+- **Focus mode.** While a hint is open, the rest of the page is blurred and locked — no clicks, no tabbing — until the user goes through the hints. <kbd>Esc</kbd> or a click on the blurred area always lets them out, and the page is never locked behind a hint that is out of view.
 - **No spam.** Up to 3 hints per page (configurable), queued in reading order. Announcements expire on their own after 30 days.
 - **Speaks your users' language.** Follows the app locale out of the box — English, Spanish and Brazilian Portuguese included — and can be forced per panel or per user.
 - **Newcomers aren't flooded.** Features released before a user signed up aren't announced to them: for them, everything is new.
@@ -111,7 +111,7 @@ class Reports extends Page
 }
 ```
 
-![A new page announced on its heading](art/screenshot-page.png)
+![A new page announced on its heading](https://raw.githubusercontent.com/leonardo-max/new-here/main/art/screenshot-page.png)
 
 ### Options
 
@@ -160,9 +160,9 @@ Action::make('duplicate')
 
 ## Focus mode
 
-By default, an open hint works like a small guided tour: the page behind it is blurred and made [`inert`](https://developer.mozilla.org/docs/Web/HTML/Global_attributes/inert) — nothing can be clicked, focused or read by a screen reader — and the element being presented is outlined. The user moves on with **Next**, finishes with **Got it**, skips with **Dismiss all**, or leaves with <kbd>Esc</kbd> (the hint comes back on the next visit).
+By default, an open hint works like a small guided tour: the page behind it is blurred and made [`inert`](https://developer.mozilla.org/docs/Web/HTML/Global_attributes/inert) — nothing can be clicked, focused or read by a screen reader — and the element being presented is outlined. The user moves on with **Next**, finishes with **Got it**, skips with **Dismiss all**, or leaves with <kbd>Esc</kbd> or a click on the blurred area (the hint comes back on the next visit). If the element is off screen — a column at the end of a wide table — the hint scrolls it into view, and the page is not locked while it is out of sight.
 
-![Focus mode, in Brazilian Portuguese](art/screenshot-focus-pt-br.png)
+![Focus mode, in Brazilian Portuguese](https://raw.githubusercontent.com/leonardo-max/new-here/main/art/screenshot-focus-pt-br.png)
 
 Prefer plain tooltips that never block the page?
 
