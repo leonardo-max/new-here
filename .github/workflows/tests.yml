@@ -73,7 +73,13 @@ jobs:
           echo "::add-matcher::${{ runner.tool_cache }}/php.json"
           echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
+      # Laravel 11 is out of security support: every 11.x release carries an
+      # open advisory, and Composer 2.11 refuses to install them. The package
+      # still supports Laravel 11, so its legs keep testing it with blocking
+      # off. Laravel 12 and 13 keep the block.
       - name: Install dependencies
+        env:
+          COMPOSER_NO_SECURITY_BLOCKING: ${{ matrix.laravel == '11.*' && '1' || '' }}
         run: |
           composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" "nesbot/carbon:${{ matrix.carbon }}" --no-interaction --no-update
           composer update --${{ matrix.stability }} --prefer-dist --no-interaction
